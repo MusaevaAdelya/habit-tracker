@@ -1,17 +1,14 @@
 package com.example.habittracker.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component	
+@Service
+@RequiredArgsConstructor
 public class EmailService {
-
-	@Autowired
-	private JavaMailSender javaMailSender;
-	
+	private final JavaMailSender javaMailSender;
 
 	public void sendEmail(SimpleMailMessage simpleMailMessage) {
 		javaMailSender.send(simpleMailMessage);

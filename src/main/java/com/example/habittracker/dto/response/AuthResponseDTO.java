@@ -1,4 +1,4 @@
-package com.example.habittracker.dto;
+package com.example.habittracker.dto.response;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
