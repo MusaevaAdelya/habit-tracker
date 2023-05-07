@@ -42,7 +42,7 @@ public class SecurityConfig {
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
 		.authorizeHttpRequests()
-		.requestMatchers("/auth/**").permitAll() //antMatchers() был изменен на requestMatchers() с Spring Security 6
+		.requestMatchers("/api/v{version:\\d+}/auth/**").permitAll() //antMatchers() был изменен на requestMatchers() с Spring Security 6
 		.anyRequest().authenticated()
 		.and()
 		.httpBasic();

@@ -1,12 +1,18 @@
 package com.example.habittracker.controllers;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.habittracker.dto.request.PasswordResetRequest;
+import com.example.habittracker.services.UserService;
+import com.example.habittracker.services.impl.UserServiceImpl;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,22 +20,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.habittracker.config.JwtAuthEntryPoint;
-import com.example.habittracker.config.SecurityConfig;
 import com.example.habittracker.config.TokenProvider;
-import com.example.habittracker.dto.AuthResponseDTO;
-import com.example.habittracker.dto.LoginDTO;
-import com.example.habittracker.dto.RegisterDTO;
+import com.example.habittracker.dto.response.AuthResponseDTO;
+import com.example.habittracker.dto.request.LoginDTO;
+import com.example.habittracker.dto.request.RegisterDTO;
 import com.example.habittracker.entities.ConfirmationToken;
 import com.example.habittracker.entities.Role;
 import com.example.habittracker.entities.Userr;
@@ -38,34 +34,19 @@ import com.example.habittracker.repositories.RoleRepository;
 import com.example.habittracker.repositories.UserRepository;
 import com.example.habittracker.services.EmailService;
 
-import jakarta.websocket.server.PathParam;
-
 @RestController
-@RequestMapping("/auth")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 	
-	private ConfirmationTokenRepository confirmationTokenRepository;
-	private AuthenticationManager authenticationManager;
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
-	private PasswordEncoder passwordEncoder;
-	private TokenProvider tokenProvider;
-	@Autowired
-	private EmailService emailService;
-	
-	
-
-	public AuthController(ConfirmationTokenRepository confirmationTokenRepository,
-			AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository,
-			PasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
-		super();
-		this.confirmationTokenRepository = confirmationTokenRepository;
-		this.authenticationManager = authenticationManager;
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.tokenProvider = tokenProvider;
-	}
+	private final ConfirmationTokenRepository confirmationTokenRepository;
+	private final AuthenticationManager authenticationManager;
+	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final TokenProvider tokenProvider;
+	private final EmailService emailService;
+	private final UserService userServiceImpl;
 
 	 @DeleteMapping("/{id}")
 	    public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -75,7 +56,7 @@ public class AuthController {
 	    }
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto){
+	public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto, final HttpServletRequest request){
 		if(this.userRepository.existsByEmail(registerDto.getEmail())){
 			return new ResponseEntity<String>("This email address is already used", HttpStatus.BAD_REQUEST);
 		}
@@ -116,8 +97,8 @@ public class AuthController {
 		
 		
 		System.out.println(confirmationToken.getConfirmationToken());
-		mailMessage.setText("To confirm your account, please click here : " +
-		"http://localhost:8080/auth/confirm-account/"+confirmationToken.getConfirmationToken());
+		String url=applicationUrl(request);
+		mailMessage.setText("To confirm your account, please click here : " + url +"/api/v1/auth/confirm-account/"+confirmationToken.getConfirmationToken());
 		
 		emailService.sendEmail(mailMessage);
 		return new ResponseEntity<>("User registered successfully!"
@@ -165,6 +146,41 @@ public class AuthController {
 			return new ResponseEntity<>("Account verified successfully",HttpStatus.OK);
 		}
 		return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
+	}
+
+	@PostMapping("/password-reset-request")
+	public ResponseEntity<String> resetPasswordRequest(@RequestParam(name="email")String email,
+									   final HttpServletRequest servletRequest)
+			throws MessagingException, UnsupportedEncodingException {
+
+		Optional<Userr> user = userServiceImpl.findByEmail(email);
+		if (user.isPresent()) {
+			String passwordResetToken = UUID.randomUUID().toString();
+			userServiceImpl.createPasswordResetTokenForUser(user.get(), passwordResetToken);
+			String url = applicationUrl(servletRequest)+"/api/v1/auth/reset-password?token="+passwordResetToken;
+			emailService.sendPasswordResetVerificationEmail(email,url);
+		}
+		return ResponseEntity.ok().body("We have sent a password reset link to "+email+". Click the link within 10 minutes or you'll need to request a new one. If you don't see the email, check your spam folder");
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<String> resetPassword(@RequestParam(name="new_password") String newPassword,
+								@RequestParam("token") String token){
+		String tokenVerificationResult = userServiceImpl.validatePasswordResetToken(token);
+		if (!tokenVerificationResult.equalsIgnoreCase("valid")) {
+			return ResponseEntity.badRequest().body("Invalid token password reset token");
+		}
+		Optional<Userr> theUser = Optional.ofNullable(userServiceImpl.findUserByPasswordToken(token));
+		if (theUser.isPresent()) {
+			userServiceImpl.resetPassword(theUser.get(), newPassword);
+			return ResponseEntity.ok().body("Password has been reset successfully");
+		}
+		return ResponseEntity.badRequest().body("Invalid token password reset token");
+	}
+
+	public String applicationUrl(HttpServletRequest request) {
+		return "http://"+request.getServerName()+":"
+				+request.getServerPort()+request.getContextPath();
 	}
 	
 	
