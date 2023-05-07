@@ -1,10 +1,42 @@
 version: '3.8'
 services:
-  db:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123asdf
+  api:
+    build:
+      context: .
     ports:
-      - '5432:5432'
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:5432/db
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+
+  postgres:
+    image: postgres:10.4
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "35000:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:4.28
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+
+volumes:
+  postgres:
+  pgadmin:
+
+
