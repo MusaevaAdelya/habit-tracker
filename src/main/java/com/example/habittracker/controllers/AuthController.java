@@ -48,12 +48,6 @@ public class AuthController {
 	private final EmailService emailService;
 	private final UserService userServiceImpl;
 
-	 @DeleteMapping("/{id}")
-	    public ResponseEntity<?> delete(@PathVariable Long id) {
-		 	
-	        userRepository.deleteById(id);
-	        return new ResponseEntity<>(HttpStatus.OK);
-	    }
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto, final HttpServletRequest request){
