@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.habittracker.dto.EnableDto;
 import com.example.habittracker.entities.Habit;
 import com.example.habittracker.repositories.HabitRepository;
+
+import lombok.Delegate;
 
 @RestController
 @RequestMapping("/main")
@@ -54,6 +57,15 @@ public class HabitController {
 		}
 		return new ResponseEntity<String>("Create a habit!",HttpStatus.BAD_REQUEST);
 		
+	}
+	
+	@DeleteMapping("/deleteHabit")
+	public ResponseEntity<?> deleteHabit(@RequestBody String habitName){
+		if(this.habitRepository.existsByName(habitName)) {
+			this.habitRepository.delete(this.habitRepository.getByName(habitName));
+			return new ResponseEntity<String>("Habit was deleted successfully!", HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("Habit does not exist!", HttpStatus.BAD_REQUEST);
 	}
 	
 }
