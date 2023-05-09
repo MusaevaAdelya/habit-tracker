@@ -7,5 +7,9 @@ create table habit(
 			periodicity integer,
 			start_date timestamp(6),
 			enable boolean not null,
-            primary key (id)
+			user_id bigint,
+            primary key (id),
+            constraint FK_habit_users
+                foreign key (user_id)
+                    references users(id)
 )

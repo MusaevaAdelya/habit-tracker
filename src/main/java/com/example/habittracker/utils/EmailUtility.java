@@ -16,7 +16,7 @@ public class EmailUtility {
     public void sendVerificationEmail( ConfirmationToken confirmationToken, JavaMailSender mailSender, String applicationUrl)
             throws MessagingException, UnsupportedEncodingException {
         String toAddress = confirmationToken.getUser().getEmail();
-        String fromAddress = "msvadelya@gmail.com";
+        String fromAddress = "yourhabittracker2023@gmail.com";
         String senderName = "Habit Tracker Service";
         String subject = "Please complete registration";
         String content = "Dear [[name]],<br>"
@@ -45,7 +45,7 @@ public class EmailUtility {
 
     public static void sendPasswordResetCode(PasswordResetToken passwordResetToken, JavaMailSender mailSender, String applicationUrl) throws MessagingException, UnsupportedEncodingException {
         String toAddress = passwordResetToken.getUser().getEmail();
-        String fromAddress = "msvadelya@gmail.com";
+        String fromAddress = "yourhabittracker2023@gmail.com";
         String senderName = "Habit Tracker Service";
         String subject = "Password Reset";
         String content = "Dear [[name]],<br>"

@@ -54,6 +54,9 @@ public class User implements UserDetails {
 
     private Long points;
 
+    @OneToMany(mappedBy = "user")
+    private List<Habit> habits;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

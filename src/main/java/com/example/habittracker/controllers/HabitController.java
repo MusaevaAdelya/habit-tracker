@@ -1,8 +1,8 @@
 package com.example.habittracker.controllers;
 
 import java.util.Date;
-import java.util.Map;
 
+import com.example.habittracker.dto.request.EnableDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.habittracker.dto.EnableDto;
 import com.example.habittracker.entities.Habit;
-import com.example.habittracker.entities.Userr;
+import com.example.habittracker.entities.User;
 import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
 
@@ -32,7 +31,7 @@ public class HabitController {
 	@PostMapping("/addHabit")
 	public ResponseEntity<?> addHabit(@RequestBody String habitName){
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Userr user = this.userRepository.getByEmail(auth.getName());
+		User user = this.userRepository.getByEmail(auth.getName());
 		Habit habit = new Habit(habitName,user);
 		this.habitRepository.save(habit);
 
