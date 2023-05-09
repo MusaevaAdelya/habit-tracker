@@ -1,23 +1,78 @@
 package com.example.habittracker.services;
 
-import com.example.habittracker.entities.Userr;
+import com.example.habittracker.entities.AccessToken;
+import com.example.habittracker.entities.PasswordResetToken;
+import com.example.habittracker.enums.TokenType;
+import com.example.habittracker.repositories.AccessTokenRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.example.habittracker.entities.User;
+import com.example.habittracker.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
+public class UserService  {
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final PasswordResetTokenService passwordResetTokenService;
+	private final AccessTokenRepository tokenRepository;
 
-public interface UserService {
-    List<Userr> getUsers();
+	public List<User> getUsers() {
+		return userRepository.findAll();
+	}
 
-    Userr add(Userr user);
+	public User add(User user) {
+		return userRepository.save(user);
+	}
 
-    Optional<Userr> findByEmail(String email);
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
 
-    void resetPassword(Userr theUser, String newPassword);
+	public void resetPassword(User theUser, String newPassword) {
+		theUser.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(theUser);
+	}
 
-    String validatePasswordResetToken(String token);
+	public boolean validatePasswordResetToken(String token) {
+		return passwordResetTokenService.validatePasswordResetToken(token);
+	}
 
-   Userr findUserByPasswordToken(String token);
+	public User findUserByPasswordToken(String token) {
+		return passwordResetTokenService.findUserByPasswordToken(token).get();
+	}
 
-    void createPasswordResetTokenForUser(Userr user, String passwordResetToken);
+	public PasswordResetToken createPasswordResetTokenForUser(User user, String passwordResetToken) {
+		return passwordResetTokenService.createPasswordResetTokenForUser(user, passwordResetToken);
+	}
+
+	public void saveUserToken(User user, String jwtToken) {
+		var token = AccessToken.builder()
+				.user(user)
+				.token(jwtToken)
+				.tokenType(TokenType.BEARER)
+				.expired(false)
+				.revoked(false)
+				.build();
+		tokenRepository.save(token);
+	}
+
+	public void revokeAllUserTokens(User user) {
+		var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+		if (validUserTokens.isEmpty())
+			return;
+		validUserTokens.forEach(token -> {
+			token.setExpired(true);
+			token.setRevoked(true);
+		});
+		tokenRepository.saveAll(validUserTokens);
+
+	}
 }
+
+

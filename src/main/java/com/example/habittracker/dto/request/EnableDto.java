@@ -1,4 +1,4 @@
-package com.example.habittracker.dto;
+package com.example.habittracker.dto.request;
 
 import java.util.Date;
 

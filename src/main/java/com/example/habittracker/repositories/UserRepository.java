@@ -5,14 +5,14 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.habittracker.entities.Userr;
+import com.example.habittracker.entities.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<Userr, Long>{
+public interface UserRepository extends JpaRepository<User, Long>{
 
-	Optional<Userr> findByEmail(String email);
+	Optional<User> findByEmail(String email);
 	Boolean existsByEmail(String email);
-	Userr getByEmail(String email);
+	User getByEmail(String email);
 
 
 	

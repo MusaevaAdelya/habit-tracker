@@ -31,7 +31,7 @@ public class Habit {
 		this.enable = enable;
 	}
 	
-	public Habit(String habitName, Userr user) {
+	public Habit(String habitName, User user) {
 		this.name = habitName;
 		this.user = user;
 	}
@@ -52,7 +52,7 @@ public class Habit {
 	private boolean enable;
 	
 	@ManyToOne
-	private Userr user;
+	private User user;
 	
 
 	

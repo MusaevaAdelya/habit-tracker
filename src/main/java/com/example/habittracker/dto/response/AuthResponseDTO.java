@@ -1,18 +1,18 @@
 package com.example.habittracker.dto.response;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthResponseDTO {
 
+	@JsonProperty("access_token")
 	private String accessToken;
-	private String tokenType = "Bearer ";
-	
-	public AuthResponseDTO(String accessToken) {
-		this.accessToken = accessToken;
-	}
+	@JsonProperty("refresh_token")
+	private String refreshToken;
 	
 	
 }

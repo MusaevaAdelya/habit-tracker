@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.habittracker.entities.ConfirmationToken;
 
+import java.util.Optional;
+
 @Repository
 public interface ConfirmationTokenRepository extends CrudRepository<ConfirmationToken, String>{
 	
