@@ -1,6 +1,9 @@
 package com.example.habittracker.services;
 
+import com.example.habittracker.entities.AccessToken;
 import com.example.habittracker.entities.PasswordResetToken;
+import com.example.habittracker.enums.TokenType;
+import com.example.habittracker.repositories.AccessTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ public class UserService  {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final PasswordResetTokenService passwordResetTokenService;
+	private final AccessTokenRepository tokenRepository;
 
 	public List<User> getUsers() {
 		return userRepository.findAll();
@@ -47,5 +51,28 @@ public class UserService  {
 		return passwordResetTokenService.createPasswordResetTokenForUser(user, passwordResetToken);
 	}
 
+	public void saveUserToken(User user, String jwtToken) {
+		var token = AccessToken.builder()
+				.user(user)
+				.token(jwtToken)
+				.tokenType(TokenType.BEARER)
+				.expired(false)
+				.revoked(false)
+				.build();
+		tokenRepository.save(token);
+	}
 
+	public void revokeAllUserTokens(User user) {
+		var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+		if (validUserTokens.isEmpty())
+			return;
+		validUserTokens.forEach(token -> {
+			token.setExpired(true);
+			token.setRevoked(true);
+		});
+		tokenRepository.saveAll(validUserTokens);
+
+	}
 }
+
+

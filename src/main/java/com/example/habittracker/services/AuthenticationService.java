@@ -20,9 +20,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,6 +36,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final UserService userService;
 
     public ConfirmationToken register(RegisterDTO request) {
         User user = User.builder()
@@ -60,35 +63,41 @@ public class AuthenticationService {
                 .orElseThrow(() -> new NotFoundException("User with email " + request.getEmail() + " not found"));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        userService.revokeAllUserTokens(user);
+        userService.saveUserToken(user, jwtToken);
         return AuthResponseDTO.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
-        var token = AccessToken.builder()
-                .user(user)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepository.save(token);
-    }
-
-    private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty())
-            return;
-        validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
-    }
+//    public void handleOAuth2UserLogin(HttpServletResponse response, OAuth2User oAuth2User) throws IOException {
+//        String email=oAuth2User.getAttribute("email");
+//        if(!repository.existsByEmail(email)){
+//            User newUser=User.builder()
+//                    .firstname(oAuth2User.getAttribute("given_name"))
+//                    .lastname(oAuth2User.getAttribute("family_name"))
+//                    .email(email)
+//                    .profileUrl(oAuth2User.getAttribute("picture"))
+//                    .enable(true)
+//                    .build();
+//            repository.save(newUser);
+//        }
+//
+//        User user=repository.findByEmail(email).orElseThrow();
+//
+//        var jwtToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        userService.revokeAllUserTokens(user);
+//        userService.saveUserToken(user, jwtToken);
+//        var authResponse = AuthResponseDTO.builder()
+//                .accessToken(jwtToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+//
+//
+//    }
 
     public void refreshToken(
             HttpServletRequest request,
@@ -107,8 +116,8 @@ public class AuthenticationService {
                     .orElseThrow(() -> new NotFoundException("User with email " + userEmail + " not found"));
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
+                userService.revokeAllUserTokens(user);
+                userService.saveUserToken(user, accessToken);
                 var authResponse = AuthResponseDTO.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -117,4 +126,7 @@ public class AuthenticationService {
             }
         }
     }
+
+
+
 }

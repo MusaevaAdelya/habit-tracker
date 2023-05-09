@@ -40,8 +40,6 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    @Column(nullable = false)
-    @Size(min = 8, max = 120)
     private String password;
 
     private String profileUrl;
@@ -49,10 +47,12 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean enable = false;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role=Role.USER;
 
-    private Long points;
+    @Builder.Default
+    private Long points=0L;
 
     @OneToMany(mappedBy = "user")
     private List<Habit> habits;

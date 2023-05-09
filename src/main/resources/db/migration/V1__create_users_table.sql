@@ -4,7 +4,7 @@ create table users (
     enable boolean not null,
     firstname varchar(255) not null,
     lastname varchar(255) not null,
-    password varchar(255) not null,
+    password varchar(255),
     points bigint,
     profile_url varchar(255),
     role varchar(255),

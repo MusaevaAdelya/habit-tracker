@@ -1,5 +1,8 @@
 package com.example.habittracker.services;
 
+import com.example.habittracker.entities.AccessToken;
+import com.example.habittracker.entities.User;
+import com.example.habittracker.enums.TokenType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -92,4 +95,6 @@ public class JwtService {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     return Keys.hmacShaKeyFor(keyBytes);
   }
+
+
 }
