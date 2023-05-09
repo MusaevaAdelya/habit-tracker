@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,9 @@ public class Userr {
 	private String email;
 	private String password;
 	private boolean enable = false;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Habit> habits;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL, CascadeType.REMOVE})
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
