@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,12 @@ public class Habit {
 		this.endDate = endDate;
 		this.enable = enable;
 	}
+	
+	public Habit(String habitName, Userr user) {
+		this.name = habitName;
+		this.user = user;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -43,6 +50,9 @@ public class Habit {
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date endDate;
 	private boolean enable;
+	
+	@ManyToOne
+	private Userr user;
 	
 
 	
