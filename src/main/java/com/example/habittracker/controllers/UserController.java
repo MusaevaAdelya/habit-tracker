@@ -6,16 +6,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.habittracker.entities.Userr;
+import com.example.habittracker.entities.User;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userServiceImpl;
+    private final UserService userService;
 	
 	
 	@PostMapping("/add")
-	public Userr add(@RequestBody Userr user) {
-		return this.userServiceImpl.add(user);
+	public User add(@RequestBody User user) {
+		return userService.add(user);
 	}
 }

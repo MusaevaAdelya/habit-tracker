@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.habittracker.dto.EnableDto;
+import com.example.habittracker.dto.request.EnableDto;
 import com.example.habittracker.entities.Habit;
 import com.example.habittracker.repositories.HabitRepository;
-
-import lombok.Delegate;
 
 @RestController
 @RequestMapping("/main")

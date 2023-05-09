@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Entity
+@Entity()
 @NoArgsConstructor
 public class PasswordResetToken {
     @Id
@@ -22,9 +22,9 @@ public class PasswordResetToken {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private Userr user;
+    private User user;
 
-    public PasswordResetToken(String token, Userr user) {
+    public PasswordResetToken(String token, User user) {
         super();
         this.token = token;
         this.user = user;

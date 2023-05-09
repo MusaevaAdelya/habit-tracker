@@ -1,14 +1,3 @@
-#FROM openjdk:17-jdk
-#
-#WORKDIR /app
-#
-#COPY target/habit-tracker.jar /app/habit-tracker.jar
-#
-#EXPOSE 8080
-#
-#CMD ["java", "-jar", "habit-tracker.jar"]
-
-
 # Multi Stage build
 
 # Base Image and name stage as "builder"

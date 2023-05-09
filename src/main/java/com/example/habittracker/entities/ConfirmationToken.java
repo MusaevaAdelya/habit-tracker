@@ -14,9 +14,8 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity()
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,15 +29,15 @@ public class ConfirmationToken {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDate;
 	
-	@OneToOne(targetEntity = Userr.class, fetch = FetchType.EAGER)
-	@JoinColumn(nullable = false, name = "id")
-	private Userr user;
+	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false, name = "user_id")
+	private User user;
 	
-	public ConfirmationToken(Userr user) {
+	public ConfirmationToken(User user) {
 		this.user = user;
 	}
 
-	public ConfirmationToken(Userr user, String generatedString) {
+	public ConfirmationToken(User user, String generatedString) {
 		this.user = user;
 		this.confirmationToken = generatedString;
 	}
