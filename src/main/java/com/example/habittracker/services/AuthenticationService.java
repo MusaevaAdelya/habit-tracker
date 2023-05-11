@@ -71,34 +71,6 @@ public class AuthenticationService {
                 .build();
     }
 
-//    public void handleOAuth2UserLogin(HttpServletResponse response, OAuth2User oAuth2User) throws IOException {
-//        String email=oAuth2User.getAttribute("email");
-//        if(!repository.existsByEmail(email)){
-//            User newUser=User.builder()
-//                    .firstname(oAuth2User.getAttribute("given_name"))
-//                    .lastname(oAuth2User.getAttribute("family_name"))
-//                    .email(email)
-//                    .profileUrl(oAuth2User.getAttribute("picture"))
-//                    .enable(true)
-//                    .build();
-//            repository.save(newUser);
-//        }
-//
-//        User user=repository.findByEmail(email).orElseThrow();
-//
-//        var jwtToken = jwtService.generateToken(user);
-//        var refreshToken = jwtService.generateRefreshToken(user);
-//        userService.revokeAllUserTokens(user);
-//        userService.saveUserToken(user, jwtToken);
-//        var authResponse = AuthResponseDTO.builder()
-//                .accessToken(jwtToken)
-//                .refreshToken(refreshToken)
-//                .build();
-//        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-//
-//
-//    }
-
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response

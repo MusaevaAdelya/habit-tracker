@@ -110,6 +110,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.33.0</version>
+        </dependency>
     </dependencies>
 
     <build>
