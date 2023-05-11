@@ -54,7 +54,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Long points=0L;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Habit> habits;
 
 

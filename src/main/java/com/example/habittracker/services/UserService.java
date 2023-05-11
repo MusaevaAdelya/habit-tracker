@@ -7,6 +7,8 @@ import com.example.habittracker.entities.PasswordResetToken;
 import com.example.habittracker.enums.TokenType;
 import com.example.habittracker.exceptions.NotFoundException;
 import com.example.habittracker.repositories.AccessTokenRepository;
+import com.example.habittracker.repositories.ConfirmationTokenRepository;
+import com.example.habittracker.repositories.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,8 @@ public class UserService  {
 	private final PasswordResetTokenService passwordResetTokenService;
 	private final AccessTokenRepository tokenRepository;
 	private final ImageUploadService imageUploadService;
+	private final ConfirmationTokenRepository confirmationTokenRepository;
+	private final PasswordResetTokenRepository passwordResetTokenRepository;
 
 	public List<User> getUsers() {
 		return userRepository.findAll();
@@ -108,8 +112,11 @@ public class UserService  {
 
 	public Long deleteUser(String email) {
 		User user=findUserByEmail(email);
-		user.setEnable(false);
-		userRepository.save(user);
+		Long userId=user.getId();
+		tokenRepository.deleteByUserId(userId);
+		confirmationTokenRepository.deleteByUserId(userId);
+		passwordResetTokenRepository.deleteByUserId(userId);
+		userRepository.deleteById(userId);
 		return user.getId();
 	}
 

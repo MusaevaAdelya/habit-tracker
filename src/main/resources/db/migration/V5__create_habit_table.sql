@@ -1,5 +1,5 @@
 create table habit(
-			id integer not null,
+			id bigserial not null,
 			description varchar(255),
 			end_date timestamp(6),
 			goal integer,

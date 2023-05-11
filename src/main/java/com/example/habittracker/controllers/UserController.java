@@ -38,7 +38,7 @@ public class UserController {
 
 	@DeleteMapping("/delete")
 	public ResponseEntity<String> deleteUser(Authentication authentication){
-		return ResponseEntity.ok("Deleted user with id"+userService.deleteUser(authentication.getName()));
+		return ResponseEntity.ok("Deleted user with id: "+userService.deleteUser(authentication.getName()));
 	}
 
 
