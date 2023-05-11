@@ -28,13 +28,10 @@ public class SecurityConfiguration {
             .csrf()
             .disable()
             .authorizeHttpRequests()
-            .requestMatchers("/api/v1/auth/**","/oauth/**")
-            .permitAll()
-            .anyRequest()
-            .authenticated()
+            .requestMatchers("/api/v1/auth/**","/oauth/**").permitAll()
+            .anyRequest().authenticated()
             .and()
-            .oauth2Login()
-                .successHandler(oAuth2SuccessHandler)
+            .oauth2Login().successHandler(oAuth2SuccessHandler)
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -45,7 +42,7 @@ public class SecurityConfiguration {
             .logoutUrl("/api/v1/auth/logout")
             .addLogoutHandler(logoutHandler)
             .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-        ;
+           ;
 
         return http.build();
     }
