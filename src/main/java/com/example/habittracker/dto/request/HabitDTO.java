@@ -17,13 +17,5 @@ public class HabitDTO {
 	private String description;
 	private int goalDays;
 	private int perDay;
-	private String goalPeriodType;
-	private String habitType;
-	
-	
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private LocalDate startDate;
-	
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private LocalDate endDate;
+
 }

@@ -45,14 +45,13 @@ public class Habit {
 	
 	private boolean enable;
 	private int completedDays;
-	@Column
-	@ElementCollection(targetClass=Date.class)
-	private Map<LocalDate, Boolean> completionStatusByDate;
+
 	
 	@ManyToOne
 	private User user;
 
-	public Habit(String name, String description, int goalDays, int perDay, LocalDate startDate, LocalDate endDate) {
+	public Habit(String name, String description, int goalDays, int perDay, LocalDate startDate, LocalDate endDate,
+			User user,boolean enable) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -60,16 +59,14 @@ public class Habit {
 		this.perDay = perDay;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.user = user;
+		this.enable = enable;
 	}
 
-	public Habit(String description, int goalDays, int perDay, LocalDate startDate, LocalDate endDate) {
-		super();
-		this.description = description;
-		this.goalDays = goalDays;
-		this.perDay = perDay;
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
+	
+
+
+	
 	
 	
 	

@@ -28,19 +28,8 @@ public class HabitTrackerApplication implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		/*
-		 * List<Habit> existedHabits = new ArrayList<>(); // Habit walk = new
-		 * Habit("Walk",HabitType.SPORTS, GoalPeriodType.STEPS, false); // Habit run =
-		 * new Habit("Run", HabitType.SPORTS, GoalPeriodType.KM,false); // Habit yoga =
-		 * new Habit("Yoga", HabitType.SPORTS, GoalPeriodType.MIN,false); // // Habit
-		 * meditation = new Habit("Meditation",HabitType.THOUGHT,
-		 * GoalPeriodType.MIN,false); // Habit reading = new Habit("Reading",
-		 * HabitType.THOUGHT, GoalPeriodType.MIN,false); // // //
-		 * existedHabits.add(walk); // existedHabits.add(run); //
-		 * existedHabits.add(yoga); // existedHabits.add(meditation); //
-		 * existedHabits.add(reading); // // habitRepository.saveAll(existedHabits);
-		 */		
-		System.out.println("hello");
+			
+		System.out.println("start");
 
 	}
 
