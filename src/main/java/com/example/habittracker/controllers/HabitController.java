@@ -31,6 +31,8 @@ import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
 import com.example.habittracker.services.HabitService;
 
+import jakarta.mail.MessagingException;
+
 @RestController
 @RequestMapping("/main")
 public class HabitController {
@@ -42,7 +44,7 @@ public class HabitController {
 	@Autowired
 	private HabitService habitService;
 	@PostMapping("/addHabit")
-	public ResponseEntity<?> addHabit(@RequestBody HabitDTO habit){
+	public ResponseEntity<?> addHabit(@RequestBody HabitDTO habit) throws MessagingException{
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = this.userRepository.getByEmail(auth.getName());
 		LocalDate currentDate = LocalDate.now();
@@ -57,6 +59,7 @@ public class HabitController {
 			newHabit.setEnable(true);
 			habitService.save(newHabit);
 			
+			habitService.sendReminderEmail(newHabit.getId());
 			return new ResponseEntity<String>("Habit updated! Good luck!",HttpStatus.OK);
 			
 		}
@@ -64,7 +67,7 @@ public class HabitController {
 				habit.getPerDay(),currentDate,currentDate.plusDays(habit.getGoalDays()),user,true);
 		
 		habitService.save(newHabit);
-
+		habitService.sendReminderEmail(newHabit.getId());
 		return new ResponseEntity<String>("Habit created! Good luck!",HttpStatus.OK);
 	}
 	@GetMapping("/{id}/complete")
