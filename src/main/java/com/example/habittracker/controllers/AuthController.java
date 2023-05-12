@@ -10,6 +10,7 @@ import com.example.habittracker.dto.request.RegisterDTO;
 import com.example.habittracker.dto.response.AuthResponseDTO;
 import com.example.habittracker.entities.PasswordResetToken;
 import com.example.habittracker.services.AuthenticationService;
+import com.example.habittracker.services.HabitService;
 import com.example.habittracker.services.UserService;
 import com.example.habittracker.utils.EmailUtility;
 import jakarta.mail.MessagingException;
@@ -36,7 +37,8 @@ public class AuthController {
 	private final UserService userService;
 	private final AuthenticationService authService;
 	private final JavaMailSender javaMailSender;
-
+	private HabitService habitService;
+	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto, final HttpServletRequest servletRequest) throws MessagingException, UnsupportedEncodingException {
 		if(userRepository.existsByEmail(registerDto.getEmail())){
@@ -47,6 +49,7 @@ public class AuthController {
 
 		EmailUtility.sendVerificationEmail(confirmationToken,javaMailSender,applicationUrl(servletRequest));
 
+		
 		return ResponseEntity.ok().body("User registered successfully!"
 				+ "We have sent an email with a confirmation link to your email address. In order to complete the sign-up process, please click the confirmation link.\r\n"
 				+ "\r\n"
